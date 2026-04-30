@@ -1,13 +1,15 @@
 # GaslightBench
 
-GaslightBench is a pilot benchmark for measuring whether large language models abandon an initially correct answer after user contradiction.
+GaslightBench is a pilot benchmark for measuring whether large language models preserve an initially correct answer after user contradiction.
 
-The core measurement is a **correct-to-wrong flip**:
+The core measurement is a **correct-response breakdown**:
 
 1. The model answers a math problem.
 2. The answer is kept only if it is initially correct.
 3. The user applies conversational pressure.
-4. We measure whether the model changes to an incorrect answer.
+4. We measure whether the model loses a valid correct answer during pressure.
+
+A breakdown can be an explicit wrong numeric answer, or an invalid/no-answer output that no longer preserves the correct final answer.
 
 Public report: <https://gaslighting.netlify.app/>
 
@@ -15,13 +17,15 @@ Public report: <https://gaslighting.netlify.app/>
 
 The current pilot uses 200 GSM8K examples per model/condition. The strongest signal is on DeepSeek V4 Pro:
 
-| Model | Condition | Eligible | Total flip |
+| Model | Condition | Eligible | Total breakdown |
 | --- | --- | ---: | ---: |
 | DeepSeek V4 Pro | Epistemic pressure | 174 | 174/174 (100.0%) |
 | DeepSeek V4 Pro | Emotional pressure | 174 | 149/174 (85.6%) |
 | DeepSeek Chat | Epistemic pressure | 196 | 147/196 (75.0%) |
 | GPT-5.2 | Epistemic pressure | 195 | 36/195 (18.5%) |
 | GPT-5 Mini | Epistemic pressure | 190 | 16/190 (8.4%) |
+
+For DeepSeek V4 Pro epistemic pressure, the 100.0% result should be read as **correct-response breakdown**, not as explicit agreement with the user's false answer in every case. In the current logs, many V4 Pro failures are empty or non-parseable outputs under pressure.
 
 Treat these as **pilot results**, not a final claim. They should be replicated with more prompts, datasets, models, and repeated runs.
 
@@ -31,8 +35,9 @@ Do LLMs degrade their answers when contradicted by the user, even when their ini
 
 More specifically:
 
-- Does a model flip from a correct answer to a wrong answer under pressure?
-- Does flip rate vary by model family and capability level?
+- Does a model lose a valid correct answer under pressure?
+- When it fails, is the failure an explicit wrong-answer adoption or an invalid/no-answer breakdown?
+- Does breakdown rate vary by model family and capability level?
 - Is the flip temporary, or does it persist when the same question is asked in a fresh conversation?
 
 ## Dataset
@@ -182,5 +187,6 @@ python scripts\build_deploy_package.py
 - This is a pilot study.
 - Results are tied to the exact prompt templates, parsing logic, provider APIs, and model strings used here.
 - GSM8K is numeric and relatively constrained; other task types may behave differently.
-- DeepSeek V4 Pro had lower baseline accuracy than DeepSeek Chat and GPT-5.2 in this setup, but a very high flip rate on initially correct examples.
+- DeepSeek V4 Pro had lower baseline accuracy than DeepSeek Chat and GPT-5.2 in this setup, but a very high correct-response breakdown rate on initially correct examples.
+- Some V4 Pro breakdowns are invalid/no-answer outputs rather than explicit adoption of the user's false answer.
 - The project does not yet establish that larger models are generally more manipulable. It shows that susceptibility to false correction varies strongly by model and pressure type.
