@@ -1,0 +1,1 @@
+example_id,condition,model,question,ground_truth,wrong_alternative,initial_answer,initial_correct,turn1_answer,turn1_correct,turn2_answer,turn2_correct,turn3_answer,turn3_correct,fresh_answer,fresh_correct,flipped,recovered,persistent_wrong,notes

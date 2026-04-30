@@ -1,0 +1,3 @@
+openai>=2.15.0
+pandas>=2.2.0
+pyarrow>=19.0.0
